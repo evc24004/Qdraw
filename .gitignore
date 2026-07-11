@@ -1,0 +1,17 @@
+.DS_Store
+*.asv
+*.m~
+*.npy
+
+matlab-agentic-toolkit/
+ibm_export/
+legacy/
+dev/
+CLAUDE.md
+MATLAB-AGENT-GUIDE.md
+matrix_multiply.m
+timing_probe.m
+
+ibm/.venv/
+ibm/__pycache__/
+ibm/render.png

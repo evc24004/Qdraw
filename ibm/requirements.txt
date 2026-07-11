@@ -1,0 +1,7 @@
+numpy
+scipy
+matplotlib
+qiskit
+qiskit-aer
+qiskit-experiments
+qiskit-ibm-runtime
