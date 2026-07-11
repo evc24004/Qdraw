@@ -240,3 +240,40 @@ gains the new image, README numbers come only from the refit.
   calibration circuits and a correction stage whose benefit at these
   readout error levels (0.3-0.7 percent per qubit) is smaller than the
   crosstalk unknown this proposal is designed to measure.
+
+## 11. Revisions after review (accepted)
+
+The reviewer approved the architecture with mandatory changes. All are
+adopted; the sections above stand as the original record.
+
+1. The one-job plan is invalid: IBM caps low-level control instructions
+   near 26.8M per qubit and the 243x512 job would hit roughly 68M on the
+   busiest qubit. The render becomes four jobs of at most 64 settings,
+   512 shots each, preserving the eight-way spatial parallelism.
+2. Gate estimates were optimistic. Reviewer compilation against the live
+   target measured 62-86 CZ per component and child depths of 256-403.
+   These numbers replace the 50-60 CZ / depth-250 estimates.
+3. Line selection moves from greedy to compiled-cost global selection:
+   enumerate five-qubit paths, transpile the real circuit onto
+   candidates, score with calibrated errors, and solve the eight-path
+   set-packing lexicographically (worst line first, then total error,
+   then separation).
+4. The two-line pilot is replaced by a 1-2-4-8 concurrency ladder at 128
+   shots per setting, same representative component throughout, with
+   acceptance criteria: no line below 0.70, median eight-line
+   degradation under 0.05 versus lower concurrency, single bad lines
+   replaced rather than the design abandoned.
+5. Dynamical decoupling is an experimental arm, not a default:
+   instruction counts are checked on the scheduled circuits after DD
+   insertion, and DD is dropped if it erodes the job-limit margin
+   without measured benefit. Twirling stays off.
+6. Reconstruction reports both linear inversion (transparent) and a
+   PSD/trace-one constrained fit (physical), with bootstrap intervals;
+   the constrained fit feeds the image, the raw fit stays in the
+   archive.
+7. MATLAB's role is scoped to what it can honestly do: independent
+   convention and reconstruction checks from exported counts, not noise
+   realism.
+8. Classical shadows and compressed sensing are deferred until compared
+   offline against full tomography on Husimi-pixel error per QPU
+   execution.
