@@ -1,5 +1,5 @@
 L = load(fullfile('output', 'glyph_HUSKY.mat'));
-H = flipud(L.H(abs(L.pv) <= 3.6, abs(L.qv) <= 3.6));
+H = flipud(L.H(abs(L.pv) <= 4.1, abs(L.qv) <= 4.1));
 H = max(H/max(H(:)) - 0.05, 0) / 0.95;
 H = interp2(H, 3);
 

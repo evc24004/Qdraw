@@ -5,7 +5,7 @@ crop = @(H, ql, pl) flipud(H(abs(pv) <= pl, abs(qv) <= ql));
 norm1 = @(H) max(H/max(H(:)) - 0.05, 0) / 0.95;
 up4 = @(H) interp2(H, 2);
 
-husky = up4(norm1(crop(L.H, 3.4, 3.4)));
+husky = up4(norm1(crop(L.H, 4.0, 4.0)));
 letters = cell(1, 5);
 names = {'U', 'C', 'O', 'N', 'N2'};
 for i = 1:5
