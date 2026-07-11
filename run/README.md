@@ -66,6 +66,18 @@ about 0.05 in the other direction: gate twirling measured lower than no
 twirling on the same qubits minutes apart, which is why the final render
 ran without it.
 
+## Improvement between the two renders
+
+<p align="center"><img src="improvement.png" width="72%" alt="Per-component fidelity, unitary run vs state-preparation run"></p>
+
+The same five components on the same backend, one day apart. The only
+intended change is the circuit construction: embedding the full component
+unitary (230-245 CZ as submitted) versus preparing its target state
+directly (23-29 CZ). Calibration drift between the days is not
+controlled, so the per-component differences should be read through that
+caveat, but the size of the shift is far outside both the shot-noise
+intervals and plausible day-to-day drift.
+
 ## Reconstructed fidelity
 
 <p align="center"><img src="fidelity.png" width="82%" alt="Fidelity reconstructed from the archived tomography counts"></p>

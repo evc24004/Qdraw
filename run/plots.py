@@ -152,7 +152,7 @@ axis.set_ylim(0, 1.0)
 axis.legend(
     handles=[
         Line2D([0], [0], marker="s", color="none", markerfacecolor="#1f77b4", label="unitary circuits (230-245 CZ)"),
-        Line2D([0], [0], marker="s", color="none", markerfacecolor="#ff7f0e", label="state-preparation circuits (17 CZ)"),
+        Line2D([0], [0], marker="s", color="none", markerfacecolor="#ff7f0e", label="state-preparation circuits (23-29 CZ)"),
         Line2D([0], [0], marker="s", color="none", markerfacecolor="#777777", label="single-component pilots"),
     ],
     loc="upper left",
@@ -178,6 +178,51 @@ figure.text(
 )
 figure.tight_layout(rect=(0, 0.04, 1, 1))
 figure.savefig(here / "fidelity.png", dpi=160)
+
+
+fidelity_by_label = {
+    metadata["label"]: (value, error)
+    for metadata, value, error in zip(jobs.values(), fidelities, errors)
+}
+component_names = ["head |0>", "head |1>", "left ear", "right ear", "muzzle"]
+figure, axis = plt.subplots(figsize=(7.5, 4.8))
+for index, name in enumerate(component_names, start=1):
+    v1, v1_err = fidelity_by_label[f"component {index}: {name}"]
+    v2, v2_err = fidelity_by_label[f"state-prep {index}: {name}"]
+    axis.plot([index, index], [v1, v2], color="#bbbbbb", lw=1.2, zorder=1)
+    axis.errorbar(index, v1, yerr=v1_err, fmt="o", color="#1f77b4",
+                  capsize=3, zorder=2)
+    axis.errorbar(index, v2, yerr=v2_err, fmt="o", color="#ff7f0e",
+                  capsize=3, zorder=2)
+    axis.text(index, v2 + 0.03, f"{v2:.3f}", ha="center", fontsize=8)
+    axis.text(index, v1 - 0.05, f"{v1:.3f}", ha="center", fontsize=8)
+axis.set_xticks(range(1, 6))
+axis.set_xticklabels(component_names)
+axis.set_xlim(0.5, 5.5)
+axis.set_ylim(0, 1.0)
+axis.set_ylabel("fidelity to the prepared target state")
+axis.set_title(
+    "Same five components, same backend: unitary circuits (July 10)\n"
+    "vs state-preparation circuits (July 11)"
+)
+axis.legend(
+    handles=[
+        Line2D([0], [0], marker="o", color="none", markerfacecolor="#1f77b4", label="unitary, 230-245 CZ submitted"),
+        Line2D([0], [0], marker="o", color="none", markerfacecolor="#ff7f0e", label="state preparation, 23-29 CZ submitted"),
+    ],
+    loc="center right",
+    frameon=False,
+    fontsize=8,
+)
+figure.text(
+    0.5,
+    0.01,
+    "Linear inversion from the archived counts; 95% shot-noise intervals. The runs are one day apart, so calibration drift is not controlled.",
+    ha="center",
+    fontsize=7,
+)
+figure.tight_layout(rect=(0, 0.04, 1, 1))
+figure.savefig(here / "improvement.png", dpi=160)
 
 
 d = 16
@@ -251,4 +296,4 @@ figure.text(
 figure.tight_layout(rect=(0, 0.04, 1, 1))
 figure.savefig(here / "displacement_decay.png", dpi=160)
 
-print("wrote fidelity.png and displacement_decay.png")
+print("wrote fidelity.png, improvement.png and displacement_decay.png")
