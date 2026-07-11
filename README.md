@@ -42,7 +42,8 @@ end. Brightness is measured probability throughout.
 
 ## MATLAB version
 
-Needs the Quantum Computing support package (R2023b or newer).
+Needs the Quantum Computing support package (tested on R2026a; anything
+recent enough to have `unitaryGate` should work).
 
 ```
 matlab -batch quantum_apple_qcg
@@ -66,15 +67,21 @@ file.
 
 ```
 cd ibm
-python -m venv .venv
+python3 -m venv .venv          # needs python 3.11 or newer
 .venv/bin/pip install -r requirements.txt
 .venv/bin/python render.py
 ```
 
 By default it renders the 4-qubit husky with a noise model built from the
 target backend's live calibration (`BACKEND = "rehearse"`). Set it to
-`"aer"` for an ideal simulation, or `"ibm"` to submit to real hardware
-(needs saved IBM Quantum credentials). Stick to the 4-qubit scene on real
+`"aer"` for an ideal simulation, or `"ibm"` to submit to real hardware.
+For that you need an IBM Quantum account (the free plan gives 10 minutes
+of QPU time a month) and your API key saved locally once:
+
+```
+.venv/bin/python -c "from qiskit_ibm_runtime import QiskitRuntimeService; \
+  QiskitRuntimeService.save_account(channel='ibm_quantum_platform', token='YOUR_KEY')"
+``` Stick to the 4-qubit scene on real
 devices. A generic 4-qubit unitary already costs ~95-150 two-qubit gates
 after transpilation, and the 5-qubit glyphs are about 5x worse, which is
 past the point where anything comes back. The paper made the same call,
