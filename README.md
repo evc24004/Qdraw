@@ -73,28 +73,32 @@ python -m venv .venv
 
 By default it renders the 4-qubit husky with a noise model built from the
 target backend's live calibration (`BACKEND = "rehearse"`). Set it to
-`"aer"` for an ideal simulation or `"ibm"` to submit to real hardware
-(needs saved IBM Quantum credentials, see their docs).
+`"aer"` for an ideal simulation, or `"ibm"` to submit to real hardware
+(needs saved IBM Quantum credentials). Stick to the 4-qubit scene on real
+devices. A generic 4-qubit unitary already costs ~95-150 two-qubit gates
+after transpilation, and the 5-qubit glyphs are about 5x worse, which is
+past the point where anything comes back. The paper made the same call,
+their hardware runs were 4 qubits per mode too.
 
-This actually ran on ibm_kingston, the same machine used in the paper.
-Five tomography jobs (one per mixture component, 81 circuits x 512 shots
-each, dynamical decoupling on) on its best-calibrated 4-qubit line:
+## Run on ibm_kingston
+
+I ran the husky on ibm_kingston, the machine from the paper. Five
+tomography jobs, one per mixture component, 81 circuits x 512 shots each
+with dynamical decoupling on, placed on the best connected line of four
+qubits in that day's calibration data (qubits 151-148). About 90 seconds
+of QPU time in total.
 
 <p align="center">
-  <img src="output/husky_kingston.png" width="40%" alt="husky measured on ibm_kingston">
+  <img src="output/husky_quantum_inferno.png" width="38%" alt="matlab simulation">
+  <img src="output/husky_kingston.png" width="38%" alt="measured on ibm_kingston">
 </p>
+<p align="center"><i>left: MATLAB simulation. right: measured on ibm_kingston.</i></p>
 
-The head and muzzle survive; the ears mostly wash out. Measured component
-fidelity was around 0.26 against the ideal states, dominated by
-decoherence over the ~150 two-qubit gates each state preparation needs,
-which also drags displaced states back toward the origin. That is the
-honest state of NISQ hardware, and the same degradation is visible in the
-paper's own hardware figures. A word of warning before spending
-QPU time: a generic 4-qubit unitary transpiles to roughly 95 two-qubit
-gates, which survives current devices reasonably well. The 5-qubit
-glyphs are around 5x more expensive and mostly come back as noise, so
-those are better left on the simulator. The paper made the same
-compromise, their hardware runs were 4 qubits per mode too.
+The head and muzzle survive, the ears mostly don't. Component fidelity
+came out around 0.26: each state prep is ~150 two-qubit gates deep, the
+qubits decay while the circuit runs, and that decay also pulls displaced
+states back toward the center of the image. The paper's hardware figures
+show the same kind of damage.
 
 ## References
 
