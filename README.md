@@ -87,10 +87,10 @@ and your API key saved once:
 ```
 
 Stick to the 4-qubit scene on real devices. A generic 4-qubit unitary
-already costs ~95-150 two-qubit gates after transpilation, and the
-5-qubit glyphs are about 5x worse, which is past the point where
-anything comes back. The paper made the same call, their hardware runs
-were 4 qubits per mode too.
+decomposes to ~95 entangling gates, and 230-245 physical CZ gates once
+routed onto hardware; the 5-qubit glyphs are several times worse, which
+is past the point where anything comes back. The paper made the same
+call, their hardware runs were 4 qubits per mode too.
 
 ## Run on ibm_kingston
 
@@ -108,15 +108,17 @@ seconds per job, 70 for the render plus 14 for an earlier test.
 
 The head and muzzle survive, the ears mostly don't. Component fidelities
 came out at 0.31-0.32 (0.27 for a test job that ran without dynamical
-decoupling): each state prep is ~150 two-qubit gates deep, the qubits
-decay while the circuit runs, and that decay also pulls displaced states
-back toward the center of the image. The paper's hardware figures show
-the same kind of damage.
+decoupling). The submitted circuits carry 230-245 CZ gates each, and the
+qubits lose a lot of state over a circuit that deep; the loss also moves
+displaced states back toward the center of the image, which is
+consistent with amplitude damping though other errors contribute. The
+paper's hardware figures show the same kind of damage.
 
 The [`run/`](run/) folder has the receipts: job IDs, raw counts for all
-486 circuits, the transpiled circuits, a calibration snapshot, locked
-package versions, a script that rechecks the fidelity numbers from the
-counts alone, and a couple of plots of how the errors behave.
+486 circuits, representative submitted circuits, archived runtime
+options, a calibration snapshot, locked package versions, plots of how
+the errors behave, and scripts that recheck the fidelity numbers and
+rebuild the husky image from the counts alone.
 
 ## References
 

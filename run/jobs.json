@@ -13,14 +13,20 @@
       "seconds": 14,
       "status": "complete"
     },
-    "physical_qubits": [
-      151,
-      150,
-      149,
-      148
-    ],
-    "shots_per_circuit": 512,
     "num_circuits": 81,
+    "shots_per_circuit": 512,
+    "runtime_options": {
+      "default_shots": 512,
+      "execution": {
+        "meas_type": "classified"
+      }
+    },
+    "physical_qubits": [
+      149,
+      150,
+      148,
+      151
+    ],
     "sample_circuit": {
       "depth": 1080,
       "ops": {
@@ -46,14 +52,20 @@
       "seconds": 14,
       "status": "complete"
     },
-    "physical_qubits": [
-      151,
-      150,
-      149,
-      148
-    ],
-    "shots_per_circuit": 512,
     "num_circuits": 81,
+    "shots_per_circuit": 512,
+    "runtime_options": {
+      "default_shots": 512,
+      "dynamical_decoupling": {
+        "enable": true
+      }
+    },
+    "physical_qubits": [
+      149,
+      148,
+      150,
+      151
+    ],
     "sample_circuit": {
       "depth": 1041,
       "ops": {
@@ -79,14 +91,20 @@
       "seconds": 14,
       "status": "complete"
     },
+    "num_circuits": 81,
+    "shots_per_circuit": 512,
+    "runtime_options": {
+      "default_shots": 512,
+      "dynamical_decoupling": {
+        "enable": true
+      }
+    },
     "physical_qubits": [
-      151,
       150,
       149,
+      151,
       148
     ],
-    "shots_per_circuit": 512,
-    "num_circuits": 81,
     "sample_circuit": {
       "depth": 1028,
       "ops": {
@@ -113,14 +131,20 @@
       "seconds": 14,
       "status": "complete"
     },
+    "num_circuits": 81,
+    "shots_per_circuit": 512,
+    "runtime_options": {
+      "dynamical_decoupling": {
+        "enable": true
+      },
+      "default_shots": 512
+    },
     "physical_qubits": [
-      151,
       150,
       149,
-      148
+      148,
+      151
     ],
-    "shots_per_circuit": 512,
-    "num_circuits": 81,
     "sample_circuit": {
       "depth": 1033,
       "ops": {
@@ -146,14 +170,20 @@
       "seconds": 14,
       "status": "complete"
     },
+    "num_circuits": 81,
+    "shots_per_circuit": 512,
+    "runtime_options": {
+      "default_shots": 512,
+      "dynamical_decoupling": {
+        "enable": true
+      }
+    },
     "physical_qubits": [
-      151,
       150,
       149,
-      148
+      148,
+      151
     ],
-    "shots_per_circuit": 512,
-    "num_circuits": 81,
     "sample_circuit": {
       "depth": 1110,
       "ops": {
@@ -179,14 +209,20 @@
       "seconds": 14,
       "status": "complete"
     },
-    "physical_qubits": [
-      151,
-      150,
-      149,
-      148
-    ],
-    "shots_per_circuit": 512,
     "num_circuits": 81,
+    "shots_per_circuit": 512,
+    "runtime_options": {
+      "dynamical_decoupling": {
+        "enable": true
+      },
+      "default_shots": 512
+    },
+    "physical_qubits": [
+      149,
+      150,
+      148,
+      151
+    ],
     "sample_circuit": {
       "depth": 1038,
       "ops": {

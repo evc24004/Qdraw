@@ -34,8 +34,6 @@ for job_id, label in JOBS.items():
         "created": str(job.creation_date),
         "timestamps": m.get("timestamps"),
         "usage": m.get("usage"),
-        "physical_qubits": [151, 150, 149, 148],
-        "shots_per_circuit": 512,
     }
 
     res = job.result()
@@ -48,8 +46,16 @@ for job_id, label in JOBS.items():
         })
     with open(here / "counts" / f"{job_id}.json", "w") as f:
         json.dump(recs, f)
+    manifest[job_id]["shots_per_circuit"] = sum(recs[0]["counts"].values())
 
-    qc = job.inputs["pubs"][0][0]
+    inputs = job.inputs
+    manifest[job_id]["runtime_options"] = json.loads(
+        json.dumps(inputs.get("options", {}), default=str))
+    qc = inputs["pubs"][0][0]
+    measured = sorted(
+        (qc.find_bit(inst.clbits[0]).index, qc.find_bit(inst.qubits[0]).index)
+        for inst in qc.data if inst.operation.name == "measure")
+    manifest[job_id]["physical_qubits"] = [q for _, q in measured]
     ops = qc.count_ops()
     manifest[job_id]["sample_circuit"] = {
         "depth": qc.depth(),

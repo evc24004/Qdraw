@@ -27,14 +27,46 @@ targets = {
     "component 5: muzzle": comps[4],
 }
 
+def calibration_prediction():
+    cal = json.loads((here / "calibration_ibm_kingston.json").read_text())
+    line = [151, 150, 149, 148]
+    edges = [{151, 150}, {150, 149}, {149, 148}]
+    cz_errs, sx_errs = [], []
+    for g in cal["gates"]:
+        err = next((p["value"] for p in g["parameters"]
+                    if p["name"] == "gate_error"), None)
+        if err is None:
+            continue
+        if g["gate"] == "cz" and set(g["qubits"]) in edges:
+            cz_errs.append(err)
+        elif g["gate"] == "sx" and g["qubits"][0] in line:
+            sx_errs.append(err)
+    ro_errs = []
+    for q in line:
+        for p in cal["qubits"][q]:
+            if p["name"] == "readout_error":
+                ro_errs.append(p["value"])
+    e_cz, e_sx = np.mean(cz_errs), np.mean(sx_errs)
+    preds = []
+    for meta in jobs.values():
+        ops = meta["sample_circuit"]["ops"]
+        n1 = ops.get("sx", 0) + ops.get("x", 0)
+        preds.append((1 - e_cz) ** ops["cz"] * (1 - e_sx) ** n1
+                     * np.prod([1 - r for r in ro_errs]))
+    return float(np.mean(preds))
+
 labels = ["test\n(no DD)", "head |0>", "head |1>", "ear L", "ear R", "muzzle"]
 fids = [states[j]["fidelity_vs_ideal"] for j in jobs]
 
 fig, ax = plt.subplots(figsize=(7, 4.2))
 colors = ["#888888"] + ["#1f77b4"] * 5
 ax.bar(labels, fids, color=colors)
-ax.axhline(0.765, ls="--", c="green", lw=1)
-ax.text(5.45, 0.775, "predicted from calibration\nmedians (depolarizing)",
+pred = calibration_prediction()
+print(f"calibration-based prediction: {pred:.3f}")
+ax.axhline(pred, ls="--", c="green", lw=1)
+ax.text(5.45, pred + 0.01,
+        f"predicted from archived calibration ({pred:.2f}):\n"
+        "per-gate errors on qubits 151-148, no decoherence",
         ha="right", va="bottom", fontsize=8, color="green")
 ax.axhline(1 / 16, ls="--", c="red", lw=1)
 ax.text(5.45, 0.075, "fully mixed state", ha="right", va="bottom",
