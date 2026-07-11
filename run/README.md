@@ -1,29 +1,29 @@
 # Hardware run provenance
 
-Everything needed to check the ibm_kingston run without taking my word
-for it. IBM has no public per-job pages (jobs are only visible from the
-account that submitted them), so the raw artifacts are published here
-instead.
+Receipts for the ibm_kingston run. IBM doesn't have public pages for
+jobs (only the submitting account can query them), so the raw data is
+committed here instead and the analysis can be rerun from it directly.
 
 | File | What it is |
 |---|---|
-| `jobs.json` | The six job IDs with backend, creation time, IBM's own execution timestamps, billed usage (14 s each), shot count, and gate stats of the submitted circuits |
-| `counts/<job>.json` | Raw measurement outcomes for all 81 tomography circuits per job: measurement-basis indices (`m_idx`, 0=Z 1=X 2=Y per qubit) and the bitstring counts exactly as returned by the backend |
-| `circuits/<job>_pub0.qasm` | One full transpiled ISA circuit per job (OpenQASM 3, 156-qubit layout as actually submitted) |
-| `calibration_ibm_kingston.json` | Backend calibration snapshot at run time |
-| `requirements-lock.txt` | Exact package versions (`pip freeze`) of the environment that submitted the jobs |
-| `states/<job>.json` | Density matrices reconstructed from the published counts, with fidelity and purity |
-| `fetch.py` | The script that pulled all of the above from IBM (needs the submitting account) |
-| `refit.py` | Independent verification: linear-inversion tomography from `counts/` alone, no IBM account needed |
+| `jobs.json` | the six job IDs, creation times, IBM's execution timestamps, billed usage (14 s each), and gate stats for the submitted circuits |
+| `counts/` | raw bitstring counts for all 81 tomography circuits of each job, plus the measurement basis per circuit (`m_idx`, 0=Z 1=X 2=Y) |
+| `circuits/` | one full transpiled circuit per job, OpenQASM 3, on the 156-qubit layout as actually submitted |
+| `calibration_ibm_kingston.json` | the backend's calibration snapshot from run time |
+| `requirements-lock.txt` | pip freeze of the environment that submitted everything |
+| `states/` | density matrices reconstructed from the counts, with fidelity and purity per job |
+| `fetch.py` | pulls all of the above from IBM (needs the submitting account) |
+| `refit.py` | redoes the tomography from `counts/` alone, no account needed |
+| `plots.py` | makes the figures below from the reconstructed states |
 
-To verify the fidelity numbers yourself:
+To check the numbers yourself:
 
 ```
 cd ibm && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && cd ..
 ibm/.venv/bin/python run/refit.py
 ```
 
-Output from my machine:
+which prints, from my machine:
 
 ```
 job                    label                            fidelity  purity
@@ -35,10 +35,24 @@ d98rgugtcv6s73dmgc60   component 4: right ear              0.318   0.162
 d98rh74qp3as739tajjg   component 5: muzzle                 0.315   0.164
 ```
 
-Two notes on the numbers. The refit here is plain linear inversion, so
-it differs by ~0.005 from the PSD-projected fitter qiskit-experiments
-uses during a live run (0.267 vs the 0.263 quoted in the main README for
-the test job). And the test job was submitted without dynamical
-decoupling while the five render jobs had it enabled, which shows up as
-the fidelity gap between 0.267 and 0.31-0.32 on otherwise comparable
-circuits.
+The refit is plain linear inversion, so it lands ~0.005 away from the
+PSD-projected fitter used during the live run (0.267 here vs the 0.263
+quoted for the test job). The test job also ran without dynamical
+decoupling while the five render jobs had it on, which is worth about
++0.05 fidelity on comparable circuits.
+
+## What the errors look like
+
+<p align="center"><img src="fidelity.png" width="75%"></p>
+
+Kingston's calibration sheet (median gate errors, depolarizing model)
+predicts ~0.77 fidelity for these circuits. The machine delivered ~0.31.
+The gap is decoherence during the ~360-layer circuits, worst-case qubits,
+and correlated errors, none of which show up in per-gate medians.
+
+<p align="center"><img src="displacement_decay.png" width="65%"></p>
+
+Same effect seen in phase space: energy relaxation during the circuit
+drags every state back toward the vacuum. The ears, displaced furthest,
+lose the most, which is why they nearly vanish in the hardware image
+while the head barely moves.

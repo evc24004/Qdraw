@@ -108,11 +108,11 @@ decay while the circuit runs, and that decay also pulls displaced states
 back toward the center of the image. The paper's hardware figures show
 the same kind of damage.
 
-Full provenance for the run is in [`run/`](run/): IBM job IDs and
-timestamps, raw measurement counts for all 486 circuits, the transpiled
-circuits as submitted, the backend calibration snapshot, locked package
-versions, and a script that re-derives the fidelity numbers from the
-published counts alone.
+The [`run/`](run/) folder has the receipts: job IDs, raw counts for all
+486 circuits, the transpiled circuits, a calibration snapshot, locked
+package versions, and a script that rechecks the fidelity numbers from
+the counts alone. It also has a couple of plots of how the errors
+actually behave on the machine.
 
 ## References
 
