@@ -87,7 +87,7 @@ The first image loses most of the ear detail and its component centers
 drift toward the vacuum; that is consistent with amplitude damping over
 the deep circuits, but these data do not separate damping from
 preparation, correlated and tomography errors. The second run makes the
-point from the other side: with roughly 13x fewer entangling gates there
+point from the other side: with roughly 9x fewer entangling gates there
 is far less circuit to decay through, and the ears survive.
 
 Two single-component pilots preceded the second render. State
