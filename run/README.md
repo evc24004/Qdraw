@@ -2,8 +2,9 @@
 
 This directory contains the data behind both `ibm_kingston` figures: the
 July 10 render built from full unitaries (230-245 CZ per circuit, depths
-1028-1110) and the July 11 render built from direct state preparation
-(17 CZ, depths 70-75), plus the two single-component pilots that preceded
+1028-1110) and the July 11 render built from direct state preparation (23-29 CZ at
+submitted depths of 122-151; the state-preparation stage alone is 17 CZ
+before the tomography rotations and routing), plus the two single-component pilots that preceded
 the second run. IBM job pages are visible only to the account that
 submitted them, so the counts and representative transpiled circuits are
 stored here.

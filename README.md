@@ -60,7 +60,7 @@ ibm/.venv/bin/python ibm/render.py --backend ibm --preparation state
 `--preparation unitary` (the default) embeds each component's full unitary,
 which is what the paper describes and what the first hardware run used.
 `--preparation state` prepares the same target state directly, which cuts
-the submitted circuits from 230-245 CZ gates to about 17 and is the mode
+the submitted circuits from 230-245 CZ gates to 23-29 and is the mode
 worth using on hardware. `--dry-run` reports transpiled circuit sizes
 without submitting, and `--component N` submits a single component as a
 cheap pilot. Run `ibm/render.py --help` for the remaining options.
@@ -71,8 +71,9 @@ Two hardware renders were submitted, both to ibm_kingston. The first, on
 July 10, 2026, used the paper's unitary construction: 230-245 physical CZ
 gates per circuit at Qiskit depths of 1028-1110, which came back with
 component fidelities of 0.309-0.322. The second, the following night,
-prepared the same five target states with `--preparation state`: 17 CZ
-gates at depths of 70-75, and the fidelities rose to 0.872-0.905.
+prepared the same five target states with `--preparation state`: 23-29 CZ
+gates at submitted depths of 122-151, and the fidelities rose to
+0.872-0.905.
 
 <p align="center">
   <img src="output/husky_quantum_inferno.png" width="31%" alt="Simulated husky">
