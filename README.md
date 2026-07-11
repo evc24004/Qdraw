@@ -37,8 +37,9 @@ paper used for their runs on IBM Kingston.
 Each glyph gets its own mode because the usable phase space only spans
 about 2N in each direction, which is nowhere near enough room for five
 letters side by side. The panels are tiled into the final poster
-afterwards, and the colormaps (UConn navy or inferno) are applied at the
-end. Brightness is measured probability throughout.
+afterwards. Pixel brightness comes from the measured probabilities, then
+each panel gets normalized and a colormap (UConn navy or inferno) at the
+end.
 
 ## MATLAB version
 
@@ -72,28 +73,32 @@ python3 -m venv .venv          # needs python 3.11 or newer
 .venv/bin/python render.py
 ```
 
-By default it renders the 4-qubit husky with a noise model built from the
-target backend's live calibration (`BACKEND = "rehearse"`). Set it to
-`"aer"` for an ideal simulation, or `"ibm"` to submit to real hardware.
-For that you need an IBM Quantum account (the free plan gives 10 minutes
-of QPU time a month) and your API key saved locally once:
+The default mode (`BACKEND = "rehearse"`) simulates with a rough noise
+model made from the backend's reported median error rates. It is a
+sanity check, not a digital twin. In practice it was optimistic by about
+a factor of 2, see `run/` for the comparison. `"aer"` gives a noiseless
+simulation and `"ibm"` submits to real hardware. For that you need an
+IBM Quantum account (the free plan gives 10 minutes of QPU time a month)
+and your API key saved once:
 
 ```
 .venv/bin/python -c "from qiskit_ibm_runtime import QiskitRuntimeService; \
   QiskitRuntimeService.save_account(channel='ibm_quantum_platform', token='YOUR_KEY')"
-``` Stick to the 4-qubit scene on real
-devices. A generic 4-qubit unitary already costs ~95-150 two-qubit gates
-after transpilation, and the 5-qubit glyphs are about 5x worse, which is
-past the point where anything comes back. The paper made the same call,
-their hardware runs were 4 qubits per mode too.
+```
+
+Stick to the 4-qubit scene on real devices. A generic 4-qubit unitary
+already costs ~95-150 two-qubit gates after transpilation, and the
+5-qubit glyphs are about 5x worse, which is past the point where
+anything comes back. The paper made the same call, their hardware runs
+were 4 qubits per mode too.
 
 ## Run on ibm_kingston
 
 I ran the husky on ibm_kingston, the machine from the paper. Five
 tomography jobs, one per mixture component, 81 circuits x 512 shots each
 with dynamical decoupling on, placed on the best connected line of four
-qubits in that day's calibration data (qubits 151-148). About 90 seconds
-of QPU time in total.
+qubits in that day's calibration data (qubits 151-148). IBM billed 14
+seconds per job, 70 for the render plus 14 for an earlier test.
 
 <p align="center">
   <img src="output/husky_quantum_inferno.png" width="38%" alt="matlab simulation">
@@ -110,9 +115,8 @@ the same kind of damage.
 
 The [`run/`](run/) folder has the receipts: job IDs, raw counts for all
 486 circuits, the transpiled circuits, a calibration snapshot, locked
-package versions, and a script that rechecks the fidelity numbers from
-the counts alone. It also has a couple of plots of how the errors
-actually behave on the machine.
+package versions, a script that rechecks the fidelity numbers from the
+counts alone, and a couple of plots of how the errors behave.
 
 ## References
 
