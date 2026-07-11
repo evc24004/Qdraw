@@ -21,3 +21,4 @@ ibm/image.png
 ibm/probe4.py
 ibm/rehearsal_preview.png
 ibm/kingston_muzzle_test.png
+run/__pycache__/
