@@ -112,7 +112,10 @@ def _safe_error(value, fallback):
     return value
 
 
-def select_low_error_line(backend, n, expected_cz=240, expected_sx=680):
+PREPARATION_PROFILE = {"unitary": (240, 680), "state": (28, 120)}
+
+
+def select_low_error_line(backend, n, expected_cz, expected_sx):
     """Choose a connected line using a circuit-weighted error heuristic."""
     target = backend.target
     cz = {
@@ -182,8 +185,8 @@ def tomography(qc, backend, basis_gates, shots, qubits=None, enable_dd=True,
             sampler.options.twirling.enable_gates = twirl_gates
             sampler.options.twirling.enable_measure = twirl_measure
             sampler.options.twirling.num_randomizations = 8
-            sampler.options.twirling.shots_per_randomization = max(
-                1, shots // 8
+            sampler.options.twirling.shots_per_randomization = math.ceil(
+                shots / 8
             )
         experiment = StateTomography(qc, physical_qubits=qubits)
         data = experiment.run(backend=backend, sampler=sampler)
@@ -320,7 +323,21 @@ def parse_args(argv=None):
         "state with far fewer entangling gates",
     )
     parser.add_argument("--twirl-gates", action="store_true")
-    parser.add_argument("--twirl-measure", action="store_true")
+    parser.add_argument(
+        "--twirl-measure",
+        action="store_true",
+        help="measurement twirling; this is not readout error mitigation",
+    )
+    parser.add_argument(
+        "--component",
+        type=int,
+        help="run a single component (1-based) as a pilot job",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="transpile and report circuit statistics without submitting",
+    )
     args = parser.parse_args(argv)
     if args.shots < 1 or args.resolution < 2:
         parser.error("shots must be positive and resolution must be at least 2")
@@ -346,7 +363,10 @@ def get_backend(args, n_qubits):
     from qiskit_ibm_runtime import QiskitRuntimeService
 
     backend = QiskitRuntimeService().backend(args.backend_name)
-    qubits = args.physical_qubits or select_low_error_line(backend, n_qubits)
+    expected_cz, expected_sx = PREPARATION_PROFILE[args.preparation]
+    qubits = args.physical_qubits or select_low_error_line(
+        backend, n_qubits, expected_cz, expected_sx
+    )
     if len(qubits) != n_qubits:
         raise ValueError(f"{n_qubits} physical qubits are required")
     print(f"backend: {backend.name}")
@@ -369,8 +389,29 @@ def main(argv=None):
             raise ValueError("mixed qubit counts are supported only by the Aer backend")
         build = (component_state_circuit if args.preparation == "state"
                  else component_circuit)
+        selected = list(enumerate(components, start=1))
+        if args.component:
+            if not 1 <= args.component <= len(components):
+                raise ValueError(f"{name} has {len(components)} components")
+            selected = [selected[args.component - 1]]
+        if args.dry_run:
+            from qiskit import transpile
+
+            for index, (fock, unitary, weight) in selected:
+                qc = build(nq, fock, unitary)
+                if basis_gates:
+                    tqc = transpile(qc, basis_gates=basis_gates,
+                                    optimization_level=3)
+                else:
+                    tqc = transpile(qc, backend, optimization_level=3,
+                                    initial_layout=physical_qubits)
+                two = sum(1 for inst in tqc.data
+                          if inst.operation.num_qubits == 2)
+                print(f"{name} component {index}: depth {tqc.depth()}, "
+                      f"2q gates {two} (not submitted)")
+            continue
         image = np.zeros((args.resolution, args.resolution))
-        for index, (fock, unitary, weight) in enumerate(components, start=1):
+        for index, (fock, unitary, weight) in selected:
             print(f"{name}: component {index}/{len(components)}")
             rho = tomography(
                 build(nq, fock, unitary),
@@ -382,9 +423,15 @@ def main(argv=None):
                 twirl_gates=args.twirl_gates,
                 twirl_measure=args.twirl_measure,
             )
+            target = unitary[:, fock]
+            fidelity = float(np.real(target.conj() @ rho @ target))
+            print(f"  fidelity vs target {fidelity:.3f}")
             image += weight * husimi(rho, limit, args.resolution)
         panels[name] = image
         np.save(args.output.with_name(f"{name}.npy"), image)
+
+    if not panels:
+        return
 
     import matplotlib
 

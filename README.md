@@ -54,30 +54,46 @@ ibm/.venv/bin/python ibm/render.py
 ibm/.venv/bin/python ibm/render.py --backend rehearse
 
 # Submit to an IBM backend. This requires saved IBM Quantum credentials.
-ibm/.venv/bin/python ibm/render.py --backend ibm --backend-name ibm_kingston
+ibm/.venv/bin/python ibm/render.py --backend ibm --preparation state
 ```
 
-Run `ibm/render.py --help` to set the scene, shot count, resolution, output path
-or physical qubits. The IBM mode chooses a connected line with a heuristic that
-weights CZ and SX errors by the approximate gate mix of these circuits. It is a
-placement heuristic, not an optimizer.
+`--preparation unitary` (the default) embeds each component's full unitary,
+which is what the paper describes and what the first hardware run used.
+`--preparation state` prepares the same target state directly, which cuts
+the submitted circuits from 230-245 CZ gates to about 17 and is the mode
+worth using on hardware. `--dry-run` reports transpiled circuit sizes
+without submitting, and `--component N` submits a single component as a
+cheap pilot. Run `ibm/render.py --help` for the remaining options.
 
-## Archived Kingston run
+## Archived Kingston runs
 
-The hardware render consists of five tomography jobs submitted on July 10,
-2026, plus one earlier muzzle test. The representative submitted circuits have
-230-245 physical CZ gates and Qiskit depths of 1028-1110. The reconstructed
-component fidelities are 0.309-0.322; the earlier test is 0.267.
+Two hardware renders were submitted, both to ibm_kingston. The first, on
+July 10, 2026, used the paper's unitary construction: 230-245 physical CZ
+gates per circuit at Qiskit depths of 1028-1110, which came back with
+component fidelities of 0.309-0.322. The second, the following night,
+prepared the same five target states with `--preparation state`: 17 CZ
+gates at depths of 70-75, and the fidelities rose to 0.872-0.905.
 
 <p align="center">
-  <img src="output/husky_quantum_inferno.png" width="38%" alt="Simulated husky">
-  <img src="output/husky_kingston.png" width="38%" alt="Kingston husky">
+  <img src="output/husky_quantum_inferno.png" width="31%" alt="Simulated husky">
+  <img src="output/husky_kingston.png" width="31%" alt="Kingston husky, unitary circuits">
+  <img src="output/husky_kingston_v2.png" width="31%" alt="Kingston husky, state preparation">
 </p>
+<p align="center"><i>left: simulation. middle: hardware, unitary circuits.
+right: hardware, state-preparation circuits.</i></p>
 
-The hardware image loses most of the ear detail. The reconstructed component
-centers also move toward the vacuum. That is consistent with amplitude damping,
-but these data do not separate damping from preparation, correlated and
-tomography errors.
+The first image loses most of the ear detail and its component centers
+drift toward the vacuum; that is consistent with amplitude damping over
+the deep circuits, but these data do not separate damping from
+preparation, correlated and tomography errors. The second run makes the
+point from the other side: with roughly 13x fewer entangling gates there
+is far less circuit to decay through, and the ears survive.
+
+Two single-component pilots preceded the second render. State
+preparation without twirling measured 0.899 on the muzzle; adding gate
+twirling measured 0.846 on the same qubits minutes later. One paired
+comparison, so no general conclusion about twirling, but it decided the
+configuration for the full run.
 
 The raw counts, one submitted circuit from each job, runtime options,
 calibration snapshot and reconstruction scripts are in [`run/`](run/). They can

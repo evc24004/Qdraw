@@ -19,6 +19,13 @@ COMPONENT_INDEX = {
     "component 3: left ear": 2,
     "component 4: right ear": 3,
     "component 5: muzzle": 4,
+    "state-prep pilot: muzzle": 4,
+    "state-prep pilot: muzzle, gate twirl": 4,
+    "state-prep 1: head |0>": 0,
+    "state-prep 2: head |1>": 1,
+    "state-prep 3: left ear": 2,
+    "state-prep 4: right ear": 3,
+    "state-prep 5: muzzle": 4,
 }
 
 

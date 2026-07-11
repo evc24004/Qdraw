@@ -29,7 +29,34 @@ targets = {
     "component 3: left ear": components[2],
     "component 4: right ear": components[3],
     "component 5: muzzle": components[4],
+    "state-prep pilot: muzzle": components[4],
+    "state-prep pilot: muzzle, gate twirl": components[4],
+    "state-prep 1: head |0>": components[0],
+    "state-prep 2: head |1>": components[1],
+    "state-prep 3: left ear": components[2],
+    "state-prep 4: right ear": components[3],
+    "state-prep 5: muzzle": components[4],
 }
+
+
+def is_state_prep(label):
+    return label.startswith("state-prep")
+
+
+def is_pilot(label):
+    return "test" in label or "pilot" in label
+
+
+def short_label(label):
+    if label == "single-component test (muzzle)":
+        return "test\n(no DD)"
+    if label == "state-prep pilot: muzzle, gate twirl":
+        return "sp pilot\n(twirl)"
+    if label == "state-prep pilot: muzzle":
+        return "sp pilot"
+    part = label.split(": ")[1]
+    prefix = "sp\n" if is_state_prep(label) else ""
+    return prefix + part
 
 
 def pauli_matrix(key):
@@ -90,9 +117,10 @@ def fidelity_with_shot_error(records, psi, n=4):
     return fidelity, np.sqrt(variance)
 
 
-labels = ["test\n(no DD)", "head |0>", "head |1>", "left ear", "right ear", "muzzle"]
+labels = [short_label(metadata["label"]) for metadata in jobs.values()]
 fidelities = []
 errors = []
+colors = []
 for job_id, metadata in jobs.items():
     fock, unitary, _ = targets[metadata["label"]]
     psi = unitary[:, fock]
@@ -100,9 +128,14 @@ for job_id, metadata in jobs.items():
     fidelity, standard_error = fidelity_with_shot_error(records, psi)
     fidelities.append(fidelity)
     errors.append(1.96 * standard_error)
+    if is_pilot(metadata["label"]):
+        colors.append("#777777")
+    elif is_state_prep(metadata["label"]):
+        colors.append("#ff7f0e")
+    else:
+        colors.append("#1f77b4")
 
-figure, axis = plt.subplots(figsize=(8, 4.8))
-colors = ["#777777"] + ["#1f77b4"] * 5
+figure, axis = plt.subplots(figsize=(11, 4.8))
 bars = axis.bar(
     labels,
     fidelities,
@@ -112,9 +145,20 @@ bars = axis.bar(
     edgecolor="none",
 )
 axis.axhline(1 / 16, color="#b22222", linestyle="--", linewidth=1)
-axis.text(5.45, 1 / 16 + 0.006, "fully mixed state (1/16)", ha="right", color="#b22222")
+axis.text(len(labels) - 0.55, 1 / 16 + 0.012,
+          "fully mixed state (1/16)", ha="right", color="#b22222")
 axis.set_ylabel("fidelity to the prepared target state")
-axis.set_ylim(0, 0.38)
+axis.set_ylim(0, 1.0)
+axis.legend(
+    handles=[
+        Line2D([0], [0], marker="s", color="none", markerfacecolor="#1f77b4", label="unitary circuits (230-245 CZ)"),
+        Line2D([0], [0], marker="s", color="none", markerfacecolor="#ff7f0e", label="state-preparation circuits (17 CZ)"),
+        Line2D([0], [0], marker="s", color="none", markerfacecolor="#777777", label="single-component pilots"),
+    ],
+    loc="upper left",
+    frameon=False,
+    fontsize=8,
+)
 axis.set_title("Fidelity reconstructed from the archived tomography counts")
 for bar, value in zip(bars, fidelities):
     axis.text(
@@ -150,8 +194,9 @@ label_offsets = {
     "muzzle": (8, -22),
 }
 for job_id, metadata in jobs.items():
-    if "test" in metadata["label"]:
+    if is_pilot(metadata["label"]):
         continue
+    color = "#ff7f0e" if is_state_prep(metadata["label"]) else "#1f77b4"
     state = states[job_id]
     rho = np.array(state["rho_real"]) + 1j * np.array(state["rho_imag"])
     fock, unitary, _ = targets[metadata["label"]]
@@ -164,18 +209,19 @@ for job_id, metadata in jobs.items():
         "",
         xy=(measured_q, measured_p),
         xytext=(target_q, target_p),
-        arrowprops={"arrowstyle": "->", "color": "#1f77b4", "lw": 1.4},
+        arrowprops={"arrowstyle": "->", "color": color, "lw": 1.4},
     )
     axis.plot(target_q, target_p, "o", mfc="none", mec="#222222", ms=8)
-    axis.plot(measured_q, measured_p, "o", color="#1f77b4", ms=6)
-    label = metadata["label"].split(": ")[1]
-    axis.annotate(
-        label,
-        xy=(measured_q, measured_p),
-        xytext=label_offsets[label],
-        textcoords="offset points",
-        fontsize=8,
-    )
+    axis.plot(measured_q, measured_p, "o", color=color, ms=6)
+    if not is_state_prep(metadata["label"]):
+        label = metadata["label"].split(": ")[1]
+        axis.annotate(
+            label,
+            xy=(measured_q, measured_p),
+            xytext=label_offsets[label],
+            textcoords="offset points",
+            fontsize=8,
+        )
 
 axis.plot(0, 0, "+", color="#b22222", ms=12)
 axis.text(0.1, -0.12, "vacuum", fontsize=8, color="#b22222")
@@ -189,7 +235,8 @@ axis.set_title("Target and reconstructed component centers")
 axis.legend(
     handles=[
         Line2D([0], [0], marker="o", color="none", markeredgecolor="#222222", markerfacecolor="none", label="target"),
-        Line2D([0], [0], marker="o", color="none", markeredgecolor="#1f77b4", markerfacecolor="#1f77b4", label="linear-inversion reconstruction"),
+        Line2D([0], [0], marker="o", color="none", markeredgecolor="#1f77b4", markerfacecolor="#1f77b4", label="unitary circuits"),
+        Line2D([0], [0], marker="o", color="none", markeredgecolor="#ff7f0e", markerfacecolor="#ff7f0e", label="state-preparation circuits"),
     ],
     loc="lower right",
     frameon=False,

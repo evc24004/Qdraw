@@ -14,6 +14,13 @@ JOBS = {
     "d98rglgtcv6s73dmgbsg": "component 3: left ear",
     "d98rgugtcv6s73dmgc60": "component 4: right ear",
     "d98rh74qp3as739tajjg": "component 5: muzzle",
+    "d98sl4gtcv6s73dmhi60": "state-prep pilot: muzzle",
+    "d98smot2su3c739jmab0": "state-prep pilot: muzzle, gate twirl",
+    "d98sngotcv6s73dmhkjg": "state-prep 1: head |0>",
+    "d98sno52su3c739jmb8g": "state-prep 2: head |1>",
+    "d98snvkqp3as739tbrr0": "state-prep 3: left ear",
+    "d98so6t2su3c739jmbog": "state-prep 4: right ear",
+    "d98sohcqp3as739tbsgg": "state-prep 5: muzzle",
 }
 
 here = pathlib.Path(__file__).parent
