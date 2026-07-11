@@ -4,6 +4,7 @@
 *.npy
 
 matlab-agentic-toolkit/
+QDraw/
 ibm_export/
 legacy/
 dev/
@@ -11,9 +12,12 @@ CLAUDE.md
 MATLAB-AGENT-GUIDE.md
 matrix_multiply.m
 timing_probe.m
+output/
 
 ibm/.venv/
 ibm/__pycache__/
 ibm/render.png
 ibm/image.png
 ibm/probe4.py
+ibm/rehearsal_preview.png
+ibm/kingston_muzzle_test.png

@@ -71,9 +71,25 @@ python -m venv .venv
 .venv/bin/python render.py
 ```
 
-By default it renders the 4-qubit husky on the local Aer simulator. Set
-`BACKEND = "ibm"` to submit to real hardware instead (needs saved IBM
-Quantum credentials, see their docs). A word of warning before spending
+By default it renders the 4-qubit husky with a noise model built from the
+target backend's live calibration (`BACKEND = "rehearse"`). Set it to
+`"aer"` for an ideal simulation or `"ibm"` to submit to real hardware
+(needs saved IBM Quantum credentials, see their docs).
+
+This actually ran on ibm_kingston, the same machine used in the paper.
+Five tomography jobs (one per mixture component, 81 circuits x 512 shots
+each, dynamical decoupling on) on its best-calibrated 4-qubit line:
+
+<p align="center">
+  <img src="output/husky_kingston.png" width="40%" alt="husky measured on ibm_kingston">
+</p>
+
+The head and muzzle survive; the ears mostly wash out. Measured component
+fidelity was around 0.26 against the ideal states, dominated by
+decoherence over the ~150 two-qubit gates each state preparation needs,
+which also drags displaced states back toward the origin. That is the
+honest state of NISQ hardware, and the same degradation is visible in the
+paper's own hardware figures. A word of warning before spending
 QPU time: a generic 4-qubit unitary transpiles to roughly 95 two-qubit
 gates, which survives current devices reasonably well. The 5-qubit
 glyphs are around 5x more expensive and mostly come back as noise, so

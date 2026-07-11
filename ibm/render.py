@@ -105,8 +105,15 @@ def tomography(qc, backend, basis, shots, qubits=None):
 
     if basis:
         qc = transpile(qc, basis_gates=basis, optimization_level=3)
-    exp = StateTomography(qc, physical_qubits=qubits)
-    data = exp.run(backend, shots=shots)
+        exp = StateTomography(qc, physical_qubits=qubits)
+        data = exp.run(backend, shots=shots)
+    else:
+        from qiskit_ibm_runtime import SamplerV2
+        sampler = SamplerV2(backend)
+        sampler.options.default_shots = shots
+        sampler.options.dynamical_decoupling.enable = True
+        exp = StateTomography(qc, physical_qubits=qubits)
+        data = exp.run(backend=backend, sampler=sampler)
     data.block_for_results()
     return np.asarray(data.analysis_results("state").value.data)
 
