@@ -97,6 +97,15 @@ def component_circuit(nq, fock, unitary):
     return qc
 
 
+def component_state_circuit(nq, fock, unitary):
+    from qiskit import QuantumCircuit
+    from qiskit.circuit.library import StatePreparation
+
+    qc = QuantumCircuit(nq)
+    qc.append(StatePreparation(unitary[:, fock]), range(nq))
+    return qc
+
+
 def _safe_error(value, fallback):
     if value is None or not 0 <= value < 1:
         return fallback
@@ -154,7 +163,8 @@ def select_low_error_line(backend, n, expected_cz=240, expected_sx=680):
     return list(min(candidates)[1])
 
 
-def tomography(qc, backend, basis_gates, shots, qubits=None, enable_dd=True):
+def tomography(qc, backend, basis_gates, shots, qubits=None, enable_dd=True,
+               twirl_gates=False, twirl_measure=False):
     from qiskit import transpile
     from qiskit_experiments.library import StateTomography
 
@@ -168,6 +178,13 @@ def tomography(qc, backend, basis_gates, shots, qubits=None, enable_dd=True):
         sampler = SamplerV2(backend)
         sampler.options.default_shots = shots
         sampler.options.dynamical_decoupling.enable = enable_dd
+        if twirl_gates or twirl_measure:
+            sampler.options.twirling.enable_gates = twirl_gates
+            sampler.options.twirling.enable_measure = twirl_measure
+            sampler.options.twirling.num_randomizations = 8
+            sampler.options.twirling.shots_per_randomization = max(
+                1, shots // 8
+            )
         experiment = StateTomography(qc, physical_qubits=qubits)
         data = experiment.run(backend=backend, sampler=sampler)
     data.block_for_results()
@@ -295,6 +312,15 @@ def parse_args(argv=None):
     parser.add_argument("--physical-qubits", type=parse_qubits)
     parser.add_argument("--calibration", type=pathlib.Path, default=DEFAULT_CALIBRATION)
     parser.add_argument("--no-dd", action="store_true")
+    parser.add_argument(
+        "--preparation",
+        choices=("unitary", "state"),
+        default="unitary",
+        help="unitary replicates the paper; state prepares the same target "
+        "state with far fewer entangling gates",
+    )
+    parser.add_argument("--twirl-gates", action="store_true")
+    parser.add_argument("--twirl-measure", action="store_true")
     args = parser.parse_args(argv)
     if args.shots < 1 or args.resolution < 2:
         parser.error("shots must be positive and resolution must be at least 2")
@@ -341,16 +367,20 @@ def main(argv=None):
         nq, limit, components = scene(name)
         if nq != max(qubit_counts) and args.backend != "aer":
             raise ValueError("mixed qubit counts are supported only by the Aer backend")
+        build = (component_state_circuit if args.preparation == "state"
+                 else component_circuit)
         image = np.zeros((args.resolution, args.resolution))
         for index, (fock, unitary, weight) in enumerate(components, start=1):
             print(f"{name}: component {index}/{len(components)}")
             rho = tomography(
-                component_circuit(nq, fock, unitary),
+                build(nq, fock, unitary),
                 backend,
                 basis_gates,
                 args.shots,
                 physical_qubits,
                 enable_dd=not args.no_dd,
+                twirl_gates=args.twirl_gates,
+                twirl_measure=args.twirl_measure,
             )
             image += weight * husimi(rho, limit, args.resolution)
         panels[name] = image
