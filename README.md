@@ -96,6 +96,24 @@ twirling measured 0.846 on the same qubits minutes later. One paired
 comparison, so no general conclusion about twirling, but it decided the
 configuration for the full run.
 
+A third run rendered the full eight-component 5-qubit husky, the same
+scene as the simulation, by measuring all eight components at once on
+eight disjoint five-qubit lines: one parallel tomography experiment,
+split into four jobs to stay inside IBM's per-qubit instruction limit.
+Component fidelities came out at 0.66-0.75, lower than the 4-qubit run
+because these state preparations are roughly twice as deep; a
+same-component screen put the cost of eight-way concurrency itself at
+only about 0.04. The design, screening data and acceptance decisions are
+in [`docs/parallel-5q-proposal.md`](docs/parallel-5q-proposal.md) and
+[`run/`](run/); the whole sequence used 80 seconds of QPU time.
+
+<p align="center">
+  <img src="output/husky_quantum_inferno.png" width="34%" alt="Simulated 5-qubit husky">
+  <img src="output/husky_kingston_v3.png" width="34%" alt="Kingston husky, parallel 5-qubit render">
+</p>
+<p align="center"><i>left: 5-qubit simulation. right: the same scene measured on
+ibm_kingston, eight components in parallel.</i></p>
+
 The raw counts, one submitted circuit from each job, runtime options,
 calibration snapshot and reconstruction scripts are in [`run/`](run/). They can
 be checked without an IBM account:

@@ -66,6 +66,45 @@ about 0.05 in the other direction: gate twirling measured lower than no
 twirling on the same qubits minutes apart, which is why the final render
 ran without it.
 
+## v3: the parallel 5-qubit render
+
+Twelve further jobs (July 11, later that night) are archived in
+`jobs_parallel.json` with their counts under `counts/`; each composite
+circuit stores every child register and its measurement basis. The
+sequence and its decisions:
+
+1. An eight-line screen at 128 shots read 0.630-0.752 and failed the raw
+   0.70 gate. An ideal-simulator check put the 128-shot statistical
+   floor at 0.934, so the floor-corrected values were 0.67-0.81, with
+   one genuinely weak line.
+2. A single-line arbitration pilot on the best line read 0.761 against
+   0.716 for the same component under full concurrency: eight-way
+   parallel operation costs about 0.04 in fidelity, inside the 0.05
+   acceptance.
+3. The full render ran as four jobs of at most 64 settings, 512 shots,
+   dynamical decoupling on, twirling off. Total for all twelve jobs: 80
+   seconds of QPU time.
+
+`refit_parallel.py` demultiplexes the composite counts and reconstructs
+each component independently:
+
+```text
+component    line                      fidelity  purity
+head |0>     [73, 79, 93, 94, 95]         0.722   0.587
+head |1>     [144, 143, 142, 141, 140]    0.766   0.654
+left ear     [16, 3, 2, 1, 0]             0.740   0.612
+right ear    [82, 83, 96, 103, 104]       0.696   0.598
+muzzle       [28, 29, 30, 31, 18]         0.694   0.598
+chin         [98, 91, 90, 89, 88]         0.679   0.553
+left cheek   [47, 46, 45, 44, 43]         0.675   0.577
+right cheek  [53, 54, 55, 59, 75]         0.704   0.616
+```
+
+It also rebuilds the published image from the counts as
+`husky_rebuilt_v3.png`. The live analysis used the PSD-projected fitter,
+so its values (0.660-0.748) sit about 0.01-0.02 below the linear
+inversion above, the same fitter gap as the earlier runs.
+
 ## Improvement between the two renders
 
 <p align="center"><img src="improvement.png" width="72%" alt="Per-component fidelity, unitary run vs state-preparation run"></p>

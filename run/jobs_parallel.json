@@ -1,0 +1,766 @@
+{
+  "d98tf34qp3as739tcl10": {
+    "label": "v3 screen 1-line part 1",
+    "backend": "ibm_kingston",
+    "created": "2026-07-11 01:41:32.754463-04:00",
+    "timestamps": {
+      "created": "2026-07-11T05:41:32.754463Z",
+      "finished": "2026-07-11T05:41:57.780309Z",
+      "running": "2026-07-11T05:41:33.81033Z"
+    },
+    "usage": {
+      "quantum_seconds": 5,
+      "seconds": 5,
+      "status": "complete"
+    },
+    "runtime_options": {
+      "default_shots": 128,
+      "dynamical_decoupling": {
+        "enable": true
+      }
+    },
+    "num_circuits": 64,
+    "lines": [
+      [
+        73,
+        79,
+        93,
+        94,
+        95
+      ],
+      [
+        144,
+        143,
+        142,
+        141,
+        140
+      ],
+      [
+        16,
+        3,
+        2,
+        1,
+        0
+      ],
+      [
+        82,
+        83,
+        96,
+        103,
+        104
+      ],
+      [
+        28,
+        29,
+        30,
+        31,
+        18
+      ],
+      [
+        98,
+        91,
+        90,
+        89,
+        88
+      ],
+      [
+        47,
+        46,
+        45,
+        44,
+        43
+      ],
+      [
+        53,
+        54,
+        55,
+        59,
+        75
+      ]
+    ]
+  },
+  "d98tf3kqp3as739tcl20": {
+    "label": "v3 screen 1-line part 2",
+    "backend": "ibm_kingston",
+    "created": "2026-07-11 01:41:34.163047-04:00",
+    "timestamps": {
+      "created": "2026-07-11T05:41:34.163047Z",
+      "finished": "2026-07-11T05:42:01.137899Z",
+      "running": "2026-07-11T05:41:35.093586Z"
+    },
+    "usage": {
+      "quantum_seconds": 5,
+      "seconds": 5,
+      "status": "complete"
+    },
+    "runtime_options": {
+      "dynamical_decoupling": {
+        "enable": true
+      },
+      "default_shots": 128
+    },
+    "num_circuits": 64,
+    "lines": [
+      [
+        73,
+        79,
+        93,
+        94,
+        95
+      ],
+      [
+        144,
+        143,
+        142,
+        141,
+        140
+      ],
+      [
+        16,
+        3,
+        2,
+        1,
+        0
+      ],
+      [
+        82,
+        83,
+        96,
+        103,
+        104
+      ],
+      [
+        28,
+        29,
+        30,
+        31,
+        18
+      ],
+      [
+        98,
+        91,
+        90,
+        89,
+        88
+      ],
+      [
+        47,
+        46,
+        45,
+        44,
+        43
+      ],
+      [
+        53,
+        54,
+        55,
+        59,
+        75
+      ]
+    ]
+  },
+  "d98tf3qf47jc73a8bel0": {
+    "label": "v3 screen 1-line part 3",
+    "backend": "ibm_kingston",
+    "created": "2026-07-11 01:41:35.826596-04:00",
+    "timestamps": {
+      "created": "2026-07-11T05:41:35.826596Z",
+      "finished": "2026-07-11T05:42:26.378957Z",
+      "running": "2026-07-11T05:42:02.619154Z"
+    },
+    "usage": {
+      "quantum_seconds": 5,
+      "seconds": 5,
+      "status": "complete"
+    },
+    "runtime_options": {
+      "default_shots": 128,
+      "dynamical_decoupling": {
+        "enable": true
+      }
+    },
+    "num_circuits": 64,
+    "lines": [
+      [
+        73,
+        79,
+        93,
+        94,
+        95
+      ],
+      [
+        144,
+        143,
+        142,
+        141,
+        140
+      ],
+      [
+        16,
+        3,
+        2,
+        1,
+        0
+      ],
+      [
+        82,
+        83,
+        96,
+        103,
+        104
+      ],
+      [
+        28,
+        29,
+        30,
+        31,
+        18
+      ],
+      [
+        98,
+        91,
+        90,
+        89,
+        88
+      ],
+      [
+        47,
+        46,
+        45,
+        44,
+        43
+      ],
+      [
+        53,
+        54,
+        55,
+        59,
+        75
+      ]
+    ]
+  },
+  "d98tf4cqp3as739tcl4g": {
+    "label": "v3 screen 1-line part 4",
+    "backend": "ibm_kingston",
+    "created": "2026-07-11 01:41:37.499304-04:00",
+    "timestamps": {
+      "created": "2026-07-11T05:41:37.499304Z",
+      "finished": "2026-07-11T05:42:28.964457Z",
+      "running": "2026-07-11T05:42:05.559858Z"
+    },
+    "usage": {
+      "quantum_seconds": 4,
+      "seconds": 4,
+      "status": "complete"
+    },
+    "runtime_options": {
+      "default_shots": 128,
+      "dynamical_decoupling": {
+        "enable": true
+      }
+    },
+    "num_circuits": 51,
+    "lines": [
+      [
+        73,
+        79,
+        93,
+        94,
+        95
+      ],
+      [
+        144,
+        143,
+        142,
+        141,
+        140
+      ],
+      [
+        16,
+        3,
+        2,
+        1,
+        0
+      ],
+      [
+        82,
+        83,
+        96,
+        103,
+        104
+      ],
+      [
+        28,
+        29,
+        30,
+        31,
+        18
+      ],
+      [
+        98,
+        91,
+        90,
+        89,
+        88
+      ],
+      [
+        47,
+        46,
+        45,
+        44,
+        43
+      ],
+      [
+        53,
+        54,
+        55,
+        59,
+        75
+      ]
+    ]
+  },
+  "d98tgrqf47jc73a8bhp0": {
+    "label": "v3 screen 8-line part 1",
+    "backend": "ibm_kingston",
+    "created": "2026-07-11 01:45:19.580553-04:00",
+    "timestamps": {
+      "created": "2026-07-11T05:45:19.580553Z",
+      "finished": "2026-07-11T05:45:44.983428Z",
+      "running": "2026-07-11T05:45:20.537387Z"
+    },
+    "usage": {
+      "quantum_seconds": 5,
+      "seconds": 5,
+      "status": "complete"
+    },
+    "runtime_options": {
+      "default_shots": 128,
+      "dynamical_decoupling": {
+        "enable": true
+      }
+    },
+    "num_circuits": 64,
+    "lines": [
+      [
+        144,
+        143,
+        142,
+        141,
+        140
+      ]
+    ]
+  },
+  "d98tgs0tcv6s73dmihog": {
+    "label": "v3 screen 8-line part 2",
+    "backend": "ibm_kingston",
+    "created": "2026-07-11 01:45:20.963452-04:00",
+    "timestamps": {
+      "created": "2026-07-11T05:45:20.963452Z",
+      "finished": "2026-07-11T05:45:47.68025Z",
+      "running": "2026-07-11T05:45:22.468249Z"
+    },
+    "usage": {
+      "quantum_seconds": 5,
+      "seconds": 5,
+      "status": "complete"
+    },
+    "runtime_options": {
+      "dynamical_decoupling": {
+        "enable": true
+      },
+      "default_shots": 128
+    },
+    "num_circuits": 64,
+    "lines": [
+      [
+        144,
+        143,
+        142,
+        141,
+        140
+      ]
+    ]
+  },
+  "d98tgsif47jc73a8bhq0": {
+    "label": "v3 screen 8-line part 3",
+    "backend": "ibm_kingston",
+    "created": "2026-07-11 01:45:22.046654-04:00",
+    "timestamps": {
+      "created": "2026-07-11T05:45:22.046654Z",
+      "finished": "2026-07-11T05:45:51.99816Z",
+      "running": "2026-07-11T05:45:35.706172Z"
+    },
+    "usage": {
+      "quantum_seconds": 5,
+      "seconds": 5,
+      "status": "complete"
+    },
+    "runtime_options": {
+      "default_shots": 128,
+      "dynamical_decoupling": {
+        "enable": true
+      }
+    },
+    "num_circuits": 64,
+    "lines": [
+      [
+        144,
+        143,
+        142,
+        141,
+        140
+      ]
+    ]
+  },
+  "d98tgsotcv6s73dmihqg": {
+    "label": "v3 screen 8-line part 4",
+    "backend": "ibm_kingston",
+    "created": "2026-07-11 01:45:23.709152-04:00",
+    "timestamps": {
+      "created": "2026-07-11T05:45:23.709152Z",
+      "finished": "2026-07-11T05:45:54.895803Z",
+      "running": "2026-07-11T05:45:37.273296Z"
+    },
+    "usage": {
+      "quantum_seconds": 4,
+      "seconds": 4,
+      "status": "complete"
+    },
+    "runtime_options": {
+      "default_shots": 128,
+      "dynamical_decoupling": {
+        "enable": true
+      }
+    },
+    "num_circuits": 51,
+    "lines": [
+      [
+        144,
+        143,
+        142,
+        141,
+        140
+      ]
+    ]
+  },
+  "d98ti0cqp3as739tcqeg": {
+    "label": "v3 parallel render part 1",
+    "backend": "ibm_kingston",
+    "created": "2026-07-11 01:47:45.158317-04:00",
+    "timestamps": {
+      "created": "2026-07-11T05:47:45.158317Z",
+      "finished": "2026-07-11T05:48:26.093793Z",
+      "running": "2026-07-11T05:47:46.00787Z"
+    },
+    "usage": {
+      "quantum_seconds": 11,
+      "seconds": 11,
+      "status": "complete"
+    },
+    "runtime_options": {
+      "default_shots": 512,
+      "dynamical_decoupling": {
+        "enable": true
+      }
+    },
+    "num_circuits": 64,
+    "lines": [
+      [
+        73,
+        79,
+        93,
+        94,
+        95
+      ],
+      [
+        144,
+        143,
+        142,
+        141,
+        140
+      ],
+      [
+        16,
+        3,
+        2,
+        1,
+        0
+      ],
+      [
+        82,
+        83,
+        96,
+        103,
+        104
+      ],
+      [
+        28,
+        29,
+        30,
+        31,
+        18
+      ],
+      [
+        98,
+        91,
+        90,
+        89,
+        88
+      ],
+      [
+        47,
+        46,
+        45,
+        44,
+        43
+      ],
+      [
+        53,
+        54,
+        55,
+        59,
+        75
+      ]
+    ]
+  },
+  "d98ti0if47jc73a8bjlg": {
+    "label": "v3 parallel render part 2",
+    "backend": "ibm_kingston",
+    "created": "2026-07-11 01:47:46.963459-04:00",
+    "timestamps": {
+      "created": "2026-07-11T05:47:46.963459Z",
+      "finished": "2026-07-11T05:48:27.415951Z",
+      "running": "2026-07-11T05:47:48.068868Z"
+    },
+    "usage": {
+      "quantum_seconds": 11,
+      "seconds": 11,
+      "status": "complete"
+    },
+    "runtime_options": {
+      "default_shots": 512,
+      "dynamical_decoupling": {
+        "enable": true
+      }
+    },
+    "num_circuits": 64,
+    "lines": [
+      [
+        73,
+        79,
+        93,
+        94,
+        95
+      ],
+      [
+        144,
+        143,
+        142,
+        141,
+        140
+      ],
+      [
+        16,
+        3,
+        2,
+        1,
+        0
+      ],
+      [
+        82,
+        83,
+        96,
+        103,
+        104
+      ],
+      [
+        28,
+        29,
+        30,
+        31,
+        18
+      ],
+      [
+        98,
+        91,
+        90,
+        89,
+        88
+      ],
+      [
+        47,
+        46,
+        45,
+        44,
+        43
+      ],
+      [
+        53,
+        54,
+        55,
+        59,
+        75
+      ]
+    ]
+  },
+  "d98ti10tcv6s73dmik00": {
+    "label": "v3 parallel render part 3",
+    "backend": "ibm_kingston",
+    "created": "2026-07-11 01:47:48.575611-04:00",
+    "timestamps": {
+      "created": "2026-07-11T05:47:48.575611Z",
+      "finished": "2026-07-11T05:48:37.404278Z",
+      "running": "2026-07-11T05:47:49.636847Z"
+    },
+    "usage": {
+      "quantum_seconds": 11,
+      "seconds": 11,
+      "status": "complete"
+    },
+    "runtime_options": {
+      "default_shots": 512,
+      "dynamical_decoupling": {
+        "enable": true
+      }
+    },
+    "num_circuits": 64,
+    "lines": [
+      [
+        73,
+        79,
+        93,
+        94,
+        95
+      ],
+      [
+        144,
+        143,
+        142,
+        141,
+        140
+      ],
+      [
+        16,
+        3,
+        2,
+        1,
+        0
+      ],
+      [
+        82,
+        83,
+        96,
+        103,
+        104
+      ],
+      [
+        28,
+        29,
+        30,
+        31,
+        18
+      ],
+      [
+        98,
+        91,
+        90,
+        89,
+        88
+      ],
+      [
+        47,
+        46,
+        45,
+        44,
+        43
+      ],
+      [
+        53,
+        54,
+        55,
+        59,
+        75
+      ]
+    ]
+  },
+  "d98ti1d2su3c739jn900": {
+    "label": "v3 parallel render part 4",
+    "backend": "ibm_kingston",
+    "created": "2026-07-11 01:47:50.040623-04:00",
+    "timestamps": {
+      "created": "2026-07-11T05:47:50.040623Z",
+      "finished": "2026-07-11T05:48:45.471521Z",
+      "running": "2026-07-11T05:48:05.696494Z"
+    },
+    "usage": {
+      "quantum_seconds": 9,
+      "seconds": 9,
+      "status": "complete"
+    },
+    "runtime_options": {
+      "default_shots": 512,
+      "dynamical_decoupling": {
+        "enable": true
+      }
+    },
+    "num_circuits": 51,
+    "lines": [
+      [
+        73,
+        79,
+        93,
+        94,
+        95
+      ],
+      [
+        144,
+        143,
+        142,
+        141,
+        140
+      ],
+      [
+        16,
+        3,
+        2,
+        1,
+        0
+      ],
+      [
+        82,
+        83,
+        96,
+        103,
+        104
+      ],
+      [
+        28,
+        29,
+        30,
+        31,
+        18
+      ],
+      [
+        98,
+        91,
+        90,
+        89,
+        88
+      ],
+      [
+        47,
+        46,
+        45,
+        44,
+        43
+      ],
+      [
+        53,
+        54,
+        55,
+        59,
+        75
+      ]
+    ]
+  }
+}

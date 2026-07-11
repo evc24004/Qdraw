@@ -296,10 +296,10 @@
         "enable": true
       },
       "twirling": {
-        "enable_measure": false,
         "num_randomizations": 8,
         "shots_per_randomization": 64,
-        "enable_gates": true
+        "enable_gates": true,
+        "enable_measure": false
       }
     },
     "physical_qubits": [

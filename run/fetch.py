@@ -87,3 +87,57 @@ freeze = subprocess.run([sys.executable, "-m", "pip", "freeze"],
                         capture_output=True, text=True).stdout
 (here / "requirements-lock.txt").write_text(freeze)
 print("wrote jobs.json, calibration, requirements-lock.txt")
+
+
+PARALLEL_JOBS = {
+    "d98tf34qp3as739tcl10": "v3 screen 1-line part 1",
+    "d98tf3kqp3as739tcl20": "v3 screen 1-line part 2",
+    "d98tf3qf47jc73a8bel0": "v3 screen 1-line part 3",
+    "d98tf4cqp3as739tcl4g": "v3 screen 1-line part 4",
+    "d98tgrqf47jc73a8bhp0": "v3 screen 8-line part 1",
+    "d98tgs0tcv6s73dmihog": "v3 screen 8-line part 2",
+    "d98tgsif47jc73a8bhq0": "v3 screen 8-line part 3",
+    "d98tgsotcv6s73dmihqg": "v3 screen 8-line part 4",
+    "d98ti0cqp3as739tcqeg": "v3 parallel render part 1",
+    "d98ti0if47jc73a8bjlg": "v3 parallel render part 2",
+    "d98ti10tcv6s73dmik00": "v3 parallel render part 3",
+    "d98ti1d2su3c739jn900": "v3 parallel render part 4",
+}
+
+parallel_manifest = {}
+for job_id, label in PARALLEL_JOBS.items():
+    job = service.job(job_id)
+    m = job.metrics()
+    entry = {
+        "label": label,
+        "backend": job.backend().name,
+        "created": str(job.creation_date),
+        "timestamps": m.get("timestamps"),
+        "usage": m.get("usage"),
+        "runtime_options": json.loads(
+            json.dumps(job.inputs.get("options", {}), default=str)),
+    }
+    res = job.result()
+    entry["num_circuits"] = len(res)
+    pubs = []
+    lines = None
+    for pub in res:
+        md = pub.metadata["circuit_metadata"]
+        lines = md["composite_qubits"]
+        registers = sorted(pub.data.keys(), key=lambda n: int(n[1:]))
+        children = []
+        for child_index, register in enumerate(registers):
+            children.append({
+                "m_idx": md["composite_metadata"][child_index]["m_idx"],
+                "counts": getattr(pub.data, register).get_counts(),
+            })
+        pubs.append(children)
+    entry["lines"] = lines
+    with open(here / "counts" / f"{job_id}.json", "w") as f:
+        json.dump(pubs, f)
+    parallel_manifest[job_id] = entry
+    print(f"{job_id}  {label}: {len(res)} circuits saved")
+
+with open(here / "jobs_parallel.json", "w") as f:
+    json.dump(parallel_manifest, f, indent=2)
+print("wrote jobs_parallel.json")
