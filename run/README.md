@@ -50,3 +50,21 @@ duration, idle-time decoherence, crosstalk and drift.
 The no-DD test and DD render muzzle differ by about 0.05 fidelity. They were not
 run as a randomized controlled comparison, so that difference should not be
 generalized into a dynamical-decoupling benchmark.
+
+## Reconstructed fidelity
+
+<p align="center"><img src="fidelity.png" width="82%" alt="Fidelity reconstructed from the archived tomography counts"></p>
+
+The bars are computed directly from the committed counts with linear inversion.
+The error bars propagate multinomial shot noise through that same calculation
+and show approximate 95% intervals. They do not include calibration drift,
+crosstalk, state-preparation error or other systematic effects.
+
+## Component centers in phase space
+
+<p align="center"><img src="displacement_decay.png" width="68%" alt="Target and reconstructed component centers in phase space"></p>
+
+Open markers are the target expectation values and filled markers are the values
+from the reconstructed density matrices. The arrows describe the measured shift;
+they do not by themselves establish amplitude damping or any other single noise
+mechanism.

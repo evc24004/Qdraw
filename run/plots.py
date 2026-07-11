@@ -1,118 +1,207 @@
 import json
-import math
 import pathlib
-import re
 import sys
 
-import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+import numpy as np
 
 here = pathlib.Path(__file__).parent
 sys.path.insert(0, str(here.parent / "ibm"))
+sys.path.insert(0, str(here))
 import render
+import refit
 
-PAULI = {"I": np.eye(2), "X": np.array([[0, 1], [1, 0]]),
-         "Y": np.array([[0, -1j], [1j, 0]]), "Z": np.array([[1, 0], [0, -1]])}
 
 jobs = json.loads((here / "jobs.json").read_text())
-states = {j: json.loads((here / "states" / f"{j}.json").read_text()) for j in jobs}
-
-nq, lim, comps = render.scene("HUSKY4")
-targets = {
-    "single-component test (muzzle)": comps[4],
-    "component 1: head |0>": comps[0],
-    "component 2: head |1>": comps[1],
-    "component 3: left ear": comps[2],
-    "component 4: right ear": comps[3],
-    "component 5: muzzle": comps[4],
+states = {
+    job_id: json.loads((here / "states" / f"{job_id}.json").read_text())
+    for job_id in jobs
 }
 
-def calibration_prediction():
-    cal = json.loads((here / "calibration_ibm_kingston.json").read_text())
-    gate_error = {}
-    for g in cal["gates"]:
-        err = next((p["value"] for p in g["parameters"]
-                    if p["name"] == "gate_error"), None)
-        if err is not None:
-            gate_error[(g["gate"], tuple(g["qubits"]))] = err
-    readout_error = {
-        q: next(p["value"] for p in values if p["name"] == "readout_error")
-        for q, values in enumerate(cal["qubits"])
+_, _, components = render.scene("HUSKY4")
+targets = {
+    "single-component test (muzzle)": components[4],
+    "component 1: head |0>": components[0],
+    "component 2: head |1>": components[1],
+    "component 3: left ear": components[2],
+    "component 4: right ear": components[3],
+    "component 5: muzzle": components[4],
+}
+
+
+def pauli_matrix(key):
+    matrix = np.array([[1.0]])
+    for q in reversed(range(len(key))):
+        matrix = np.kron(matrix, refit.PAULI[key[q]])
+    return matrix
+
+
+def fidelity_with_shot_error(records, psi, n=4):
+    """Linear-inversion fidelity and propagated multinomial shot error."""
+    key_counts = {}
+    record_terms = []
+    for record in records:
+        basis = [refit.BASIS[index] for index in record["m_idx"]]
+        terms = []
+        for mask in range(1, 2**n):
+            key = tuple(
+                basis[q] if (mask >> q) & 1 else "I" for q in range(n)
+            )
+            key_counts[key] = key_counts.get(key, 0) + 1
+            terms.append((mask, key))
+        record_terms.append(terms)
+
+    d = 2**n
+    coefficients = {
+        key: float(np.real(psi.conj() @ pauli_matrix(key) @ psi))
+        / (d * count)
+        for key, count in key_counts.items()
     }
 
-    one_qubit = re.compile(r"^(sx|x) \$(\d+);$")
-    two_qubit = re.compile(r"^cz \$(\d+), \$(\d+);$")
-    measurement = re.compile(r"^c_tomo\[\d+\] = measure \$(\d+);$")
-    preds = []
-    for job_id in jobs:
-        log_success = 0.0
-        qasm = (here / "circuits" / f"{job_id}_pub0.qasm").read_text()
-        for line in qasm.splitlines():
-            if match := one_qubit.match(line):
-                key = (match.group(1), (int(match.group(2)),))
-                log_success += math.log1p(-gate_error[key])
-            elif match := two_qubit.match(line):
-                key = ("cz", (int(match.group(1)), int(match.group(2))))
-                log_success += math.log1p(-gate_error[key])
-            elif match := measurement.match(line):
-                log_success += math.log1p(-readout_error[int(match.group(1))])
-        preds.append(math.exp(log_success))
-    return float(np.mean(preds))
+    fidelity = 1 / d
+    variance = 0.0
+    for record, terms in zip(records, record_terms):
+        counts = record["counts"]
+        shots = sum(counts.values())
+        values = []
+        weights = []
+        for bits, count in counts.items():
+            value = 0.0
+            for mask, key in terms:
+                parity = sum(
+                    int(bits[len(bits) - 1 - q])
+                    for q in range(n)
+                    if (mask >> q) & 1
+                )
+                value += coefficients[key] * (-1) ** (parity % 2)
+            values.append(value)
+            weights.append(count)
+        values = np.asarray(values)
+        weights = np.asarray(weights)
+        mean = float(np.dot(values, weights) / shots)
+        fidelity += mean
+        if shots > 1:
+            variance += float(
+                np.dot(weights, (values - mean) ** 2) / (shots * (shots - 1))
+            )
+    return fidelity, np.sqrt(variance)
 
-labels = ["test\n(no DD)", "head |0>", "head |1>", "ear L", "ear R", "muzzle"]
-fids = [states[j]["fidelity_vs_ideal"] for j in jobs]
 
-fig, ax = plt.subplots(figsize=(7, 4.2))
-colors = ["#888888"] + ["#1f77b4"] * 5
-ax.bar(labels, fids, color=colors)
-pred = calibration_prediction()
-print(f"calibration-based prediction: {pred:.3f}")
-ax.axhline(pred, ls="--", c="green", lw=1)
-ax.text(5.45, pred + 0.01,
-        f"predicted from archived calibration ({pred:.2f}):\n"
-        "representative circuit gate errors, no idle-time model",
-        ha="right", va="bottom", fontsize=8, color="green")
-ax.axhline(1 / 16, ls="--", c="red", lw=1)
-ax.text(5.45, 0.075, "fully mixed state", ha="right", va="bottom",
-        fontsize=8, color="red")
-ax.set_ylabel("fidelity to target state")
-ax.set_ylim(0, 1)
-ax.set_title("ibm_kingston: measured fidelity vs calibration-sheet prediction")
-fig.tight_layout()
-fig.savefig(here / "fidelity.png", dpi=140)
+labels = ["test\n(no DD)", "head |0>", "head |1>", "left ear", "right ear", "muzzle"]
+fidelities = []
+errors = []
+for job_id, metadata in jobs.items():
+    fock, unitary, _ = targets[metadata["label"]]
+    psi = unitary[:, fock]
+    records = json.loads((here / "counts" / f"{job_id}.json").read_text())
+    fidelity, standard_error = fidelity_with_shot_error(records, psi)
+    fidelities.append(fidelity)
+    errors.append(1.96 * standard_error)
+
+figure, axis = plt.subplots(figsize=(8, 4.8))
+colors = ["#777777"] + ["#1f77b4"] * 5
+bars = axis.bar(
+    labels,
+    fidelities,
+    yerr=errors,
+    capsize=3,
+    color=colors,
+    edgecolor="none",
+)
+axis.axhline(1 / 16, color="#b22222", linestyle="--", linewidth=1)
+axis.text(5.45, 1 / 16 + 0.006, "fully mixed state (1/16)", ha="right", color="#b22222")
+axis.set_ylabel("fidelity to the prepared target state")
+axis.set_ylim(0, 0.38)
+axis.set_title("Fidelity reconstructed from the archived tomography counts")
+for bar, value in zip(bars, fidelities):
+    axis.text(
+        bar.get_x() + bar.get_width() / 2,
+        value + 0.014,
+        f"{value:.3f}",
+        ha="center",
+        va="bottom",
+        fontsize=8,
+    )
+figure.text(
+    0.5,
+    0.01,
+    "Linear inversion; error bars are 95% shot-noise intervals. Systematic hardware errors are not included.",
+    ha="center",
+    fontsize=8,
+)
+figure.tight_layout(rect=(0, 0.04, 1, 1))
+figure.savefig(here / "fidelity.png", dpi=160)
+
 
 d = 16
-a = np.diag(np.sqrt(np.arange(1, d)), 1)
-qop = (a.conj().T + a) / np.sqrt(2)
-pop = 1j * (a.conj().T - a) / np.sqrt(2)
+annihilation = np.diag(np.sqrt(np.arange(1, d)), 1)
+q_operator = (annihilation.conj().T + annihilation) / np.sqrt(2)
+p_operator = 1j * (annihilation.conj().T - annihilation) / np.sqrt(2)
 
-fig, ax = plt.subplots(figsize=(5.6, 5.6))
-for j, meta in jobs.items():
-    if "test" in meta["label"]:
+figure, axis = plt.subplots(figsize=(6, 6))
+label_offsets = {
+    "head |0>": (10, 9),
+    "head |1>": (-48, -15),
+    "left ear": (8, 8),
+    "right ear": (8, 8),
+    "muzzle": (8, -22),
+}
+for job_id, metadata in jobs.items():
+    if "test" in metadata["label"]:
         continue
-    st = states[j]
-    rho = np.array(st["rho_real"]) + 1j * np.array(st["rho_imag"])
-    fock, U, w0 = targets[meta["label"]]
-    psi = U[:, fock]
-    qd = float(np.real(psi.conj() @ qop @ psi))
-    pd_ = float(np.real(psi.conj() @ pop @ psi))
-    qm = float(np.real(np.trace(rho @ qop)))
-    pm = float(np.real(np.trace(rho @ pop)))
-    ax.annotate("", xy=(qm, pm), xytext=(qd, pd_),
-                arrowprops=dict(arrowstyle="->", color="#1f77b4", lw=1.4))
-    ax.plot(qd, pd_, "o", mfc="none", mec="black", ms=8)
-    ax.plot(qm, pm, "o", color="#1f77b4", ms=6)
-    ax.text(qd + 0.1, pd_ + 0.1, meta["label"].split(": ")[1], fontsize=8)
-ax.plot(0, 0, "r+", ms=12)
-ax.text(0.1, -0.35, "vacuum", fontsize=8, color="red")
-ax.set_xlim(-2.6, 2.6)
-ax.set_ylim(-2.6, 2.6)
-ax.set_xlabel("q")
-ax.set_ylabel("p")
-ax.set_aspect("equal")
-ax.set_title("target position (open) and reconstructed position (filled)")
-fig.tight_layout()
-fig.savefig(here / "displacement_decay.png", dpi=140)
+    state = states[job_id]
+    rho = np.array(state["rho_real"]) + 1j * np.array(state["rho_imag"])
+    fock, unitary, _ = targets[metadata["label"]]
+    psi = unitary[:, fock]
+    target_q = float(np.real(psi.conj() @ q_operator @ psi))
+    target_p = float(np.real(psi.conj() @ p_operator @ psi))
+    measured_q = float(np.real(np.trace(rho @ q_operator)))
+    measured_p = float(np.real(np.trace(rho @ p_operator)))
+    axis.annotate(
+        "",
+        xy=(measured_q, measured_p),
+        xytext=(target_q, target_p),
+        arrowprops={"arrowstyle": "->", "color": "#1f77b4", "lw": 1.4},
+    )
+    axis.plot(target_q, target_p, "o", mfc="none", mec="#222222", ms=8)
+    axis.plot(measured_q, measured_p, "o", color="#1f77b4", ms=6)
+    label = metadata["label"].split(": ")[1]
+    axis.annotate(
+        label,
+        xy=(measured_q, measured_p),
+        xytext=label_offsets[label],
+        textcoords="offset points",
+        fontsize=8,
+    )
+
+axis.plot(0, 0, "+", color="#b22222", ms=12)
+axis.text(0.1, -0.12, "vacuum", fontsize=8, color="#b22222")
+axis.set_xlim(-2.6, 2.6)
+axis.set_ylim(-2.6, 2.6)
+axis.set_xlabel("q expectation value")
+axis.set_ylabel("p expectation value")
+axis.set_aspect("equal")
+axis.grid(color="#dddddd", linewidth=0.6)
+axis.set_title("Target and reconstructed component centers")
+axis.legend(
+    handles=[
+        Line2D([0], [0], marker="o", color="none", markeredgecolor="#222222", markerfacecolor="none", label="target"),
+        Line2D([0], [0], marker="o", color="none", markeredgecolor="#1f77b4", markerfacecolor="#1f77b4", label="linear-inversion reconstruction"),
+    ],
+    loc="lower right",
+    frameon=False,
+)
+figure.text(
+    0.5,
+    0.01,
+    "Arrows show displacement in expectation value; they do not identify a specific noise mechanism.",
+    ha="center",
+    fontsize=8,
+)
+figure.tight_layout(rect=(0, 0.04, 1, 1))
+figure.savefig(here / "displacement_decay.png", dpi=160)
+
 print("wrote fidelity.png and displacement_decay.png")
