@@ -101,11 +101,18 @@ of QPU time in total.
 </p>
 <p align="center"><i>left: MATLAB simulation. right: measured on ibm_kingston.</i></p>
 
-The head and muzzle survive, the ears mostly don't. Component fidelity
-came out around 0.26: each state prep is ~150 two-qubit gates deep, the
-qubits decay while the circuit runs, and that decay also pulls displaced
-states back toward the center of the image. The paper's hardware figures
-show the same kind of damage.
+The head and muzzle survive, the ears mostly don't. Component fidelities
+came out at 0.31-0.32 (0.27 for a test job that ran without dynamical
+decoupling): each state prep is ~150 two-qubit gates deep, the qubits
+decay while the circuit runs, and that decay also pulls displaced states
+back toward the center of the image. The paper's hardware figures show
+the same kind of damage.
+
+Full provenance for the run is in [`run/`](run/): IBM job IDs and
+timestamps, raw measurement counts for all 486 circuits, the transpiled
+circuits as submitted, the backend calibration snapshot, locked package
+versions, and a script that re-derives the fidelity numbers from the
+published counts alone.
 
 ## References
 

@@ -1,0 +1,201 @@
+{
+  "d98ra8af47jc73a896ng": {
+    "label": "single-component test (muzzle)",
+    "backend": "ibm_kingston",
+    "created": "2026-07-10 23:14:42.071780-04:00",
+    "timestamps": {
+      "created": "2026-07-11T03:14:42.07178Z",
+      "finished": "2026-07-11T03:15:10.899701Z",
+      "running": "2026-07-11T03:14:43.169727Z"
+    },
+    "usage": {
+      "quantum_seconds": 14,
+      "seconds": 14,
+      "status": "complete"
+    },
+    "physical_qubits": [
+      151,
+      150,
+      149,
+      148
+    ],
+    "shots_per_circuit": 512,
+    "num_circuits": 81,
+    "sample_circuit": {
+      "depth": 1080,
+      "ops": {
+        "rz": 760,
+        "sx": 696,
+        "cz": 245,
+        "measure": 4,
+        "barrier": 2
+      }
+    }
+  },
+  "d98rg3if47jc73a89ct0": {
+    "label": "component 1: head |0>",
+    "backend": "ibm_kingston",
+    "created": "2026-07-10 23:27:11.069573-04:00",
+    "timestamps": {
+      "created": "2026-07-11T03:27:11.069573Z",
+      "finished": "2026-07-11T03:27:44.205403Z",
+      "running": "2026-07-11T03:27:12.621266Z"
+    },
+    "usage": {
+      "quantum_seconds": 14,
+      "seconds": 14,
+      "status": "complete"
+    },
+    "physical_qubits": [
+      151,
+      150,
+      149,
+      148
+    ],
+    "shots_per_circuit": 512,
+    "num_circuits": 81,
+    "sample_circuit": {
+      "depth": 1041,
+      "ops": {
+        "rz": 750,
+        "sx": 672,
+        "cz": 235,
+        "measure": 4,
+        "barrier": 2
+      }
+    }
+  },
+  "d98rgcgtcv6s73dmgbhg": {
+    "label": "component 2: head |1>",
+    "backend": "ibm_kingston",
+    "created": "2026-07-10 23:27:46.709932-04:00",
+    "timestamps": {
+      "created": "2026-07-11T03:27:46.709932Z",
+      "finished": "2026-07-11T03:28:20.162945Z",
+      "running": "2026-07-11T03:27:47.990356Z"
+    },
+    "usage": {
+      "quantum_seconds": 14,
+      "seconds": 14,
+      "status": "complete"
+    },
+    "physical_qubits": [
+      151,
+      150,
+      149,
+      148
+    ],
+    "shots_per_circuit": 512,
+    "num_circuits": 81,
+    "sample_circuit": {
+      "depth": 1028,
+      "ops": {
+        "rz": 750,
+        "sx": 666,
+        "cz": 232,
+        "measure": 4,
+        "barrier": 2,
+        "x": 1
+      }
+    }
+  },
+  "d98rglgtcv6s73dmgbsg": {
+    "label": "component 3: left ear",
+    "backend": "ibm_kingston",
+    "created": "2026-07-10 23:28:22.723598-04:00",
+    "timestamps": {
+      "created": "2026-07-11T03:28:22.723598Z",
+      "finished": "2026-07-11T03:28:55.66375Z",
+      "running": "2026-07-11T03:28:23.78178Z"
+    },
+    "usage": {
+      "quantum_seconds": 14,
+      "seconds": 14,
+      "status": "complete"
+    },
+    "physical_qubits": [
+      151,
+      150,
+      149,
+      148
+    ],
+    "shots_per_circuit": 512,
+    "num_circuits": 81,
+    "sample_circuit": {
+      "depth": 1033,
+      "ops": {
+        "rz": 766,
+        "sx": 666,
+        "cz": 230,
+        "measure": 4,
+        "barrier": 2
+      }
+    }
+  },
+  "d98rgugtcv6s73dmgc60": {
+    "label": "component 4: right ear",
+    "backend": "ibm_kingston",
+    "created": "2026-07-10 23:28:58.230818-04:00",
+    "timestamps": {
+      "created": "2026-07-11T03:28:58.230818Z",
+      "finished": "2026-07-11T03:29:31.093565Z",
+      "running": "2026-07-11T03:28:59.638812Z"
+    },
+    "usage": {
+      "quantum_seconds": 14,
+      "seconds": 14,
+      "status": "complete"
+    },
+    "physical_qubits": [
+      151,
+      150,
+      149,
+      148
+    ],
+    "shots_per_circuit": 512,
+    "num_circuits": 81,
+    "sample_circuit": {
+      "depth": 1110,
+      "ops": {
+        "rz": 766,
+        "sx": 690,
+        "cz": 242,
+        "measure": 4,
+        "barrier": 2
+      }
+    }
+  },
+  "d98rh74qp3as739tajjg": {
+    "label": "component 5: muzzle",
+    "backend": "ibm_kingston",
+    "created": "2026-07-10 23:29:32.974799-04:00",
+    "timestamps": {
+      "created": "2026-07-11T03:29:32.974799Z",
+      "finished": "2026-07-11T03:30:05.498655Z",
+      "running": "2026-07-11T03:29:34.0375Z"
+    },
+    "usage": {
+      "quantum_seconds": 14,
+      "seconds": 14,
+      "status": "complete"
+    },
+    "physical_qubits": [
+      151,
+      150,
+      149,
+      148
+    ],
+    "shots_per_circuit": 512,
+    "num_circuits": 81,
+    "sample_circuit": {
+      "depth": 1038,
+      "ops": {
+        "rz": 760,
+        "sx": 696,
+        "cz": 245,
+        "measure": 4,
+        "barrier": 2
+      }
+    }
+  }
+}
