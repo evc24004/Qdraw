@@ -1,7 +1,7 @@
-numpy
-scipy
-matplotlib
-qiskit
-qiskit-aer
-qiskit-experiments
-qiskit-ibm-runtime
+numpy>=2.5,<3
+scipy>=1.18,<2
+matplotlib>=3.11,<4
+qiskit>=2.5,<3
+qiskit-aer>=0.17,<1
+qiskit-experiments>=0.14,<1
+qiskit-ibm-runtime>=0.47,<1

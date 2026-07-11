@@ -1,5 +1,7 @@
 import json
+import math
 import pathlib
+import re
 import sys
 
 import numpy as np
@@ -29,30 +31,34 @@ targets = {
 
 def calibration_prediction():
     cal = json.loads((here / "calibration_ibm_kingston.json").read_text())
-    line = [151, 150, 149, 148]
-    edges = [{151, 150}, {150, 149}, {149, 148}]
-    cz_errs, sx_errs = [], []
+    gate_error = {}
     for g in cal["gates"]:
         err = next((p["value"] for p in g["parameters"]
                     if p["name"] == "gate_error"), None)
-        if err is None:
-            continue
-        if g["gate"] == "cz" and set(g["qubits"]) in edges:
-            cz_errs.append(err)
-        elif g["gate"] == "sx" and g["qubits"][0] in line:
-            sx_errs.append(err)
-    ro_errs = []
-    for q in line:
-        for p in cal["qubits"][q]:
-            if p["name"] == "readout_error":
-                ro_errs.append(p["value"])
-    e_cz, e_sx = np.mean(cz_errs), np.mean(sx_errs)
+        if err is not None:
+            gate_error[(g["gate"], tuple(g["qubits"]))] = err
+    readout_error = {
+        q: next(p["value"] for p in values if p["name"] == "readout_error")
+        for q, values in enumerate(cal["qubits"])
+    }
+
+    one_qubit = re.compile(r"^(sx|x) \$(\d+);$")
+    two_qubit = re.compile(r"^cz \$(\d+), \$(\d+);$")
+    measurement = re.compile(r"^c_tomo\[\d+\] = measure \$(\d+);$")
     preds = []
-    for meta in jobs.values():
-        ops = meta["sample_circuit"]["ops"]
-        n1 = ops.get("sx", 0) + ops.get("x", 0)
-        preds.append((1 - e_cz) ** ops["cz"] * (1 - e_sx) ** n1
-                     * np.prod([1 - r for r in ro_errs]))
+    for job_id in jobs:
+        log_success = 0.0
+        qasm = (here / "circuits" / f"{job_id}_pub0.qasm").read_text()
+        for line in qasm.splitlines():
+            if match := one_qubit.match(line):
+                key = (match.group(1), (int(match.group(2)),))
+                log_success += math.log1p(-gate_error[key])
+            elif match := two_qubit.match(line):
+                key = ("cz", (int(match.group(1)), int(match.group(2))))
+                log_success += math.log1p(-gate_error[key])
+            elif match := measurement.match(line):
+                log_success += math.log1p(-readout_error[int(match.group(1))])
+        preds.append(math.exp(log_success))
     return float(np.mean(preds))
 
 labels = ["test\n(no DD)", "head |0>", "head |1>", "ear L", "ear R", "muzzle"]
@@ -66,7 +72,7 @@ print(f"calibration-based prediction: {pred:.3f}")
 ax.axhline(pred, ls="--", c="green", lw=1)
 ax.text(5.45, pred + 0.01,
         f"predicted from archived calibration ({pred:.2f}):\n"
-        "per-gate errors on qubits 151-148, no decoherence",
+        "representative circuit gate errors, no idle-time model",
         ha="right", va="bottom", fontsize=8, color="green")
 ax.axhline(1 / 16, ls="--", c="red", lw=1)
 ax.text(5.45, 0.075, "fully mixed state", ha="right", va="bottom",
@@ -106,8 +112,7 @@ ax.set_ylim(-2.6, 2.6)
 ax.set_xlabel("q")
 ax.set_ylabel("p")
 ax.set_aspect("equal")
-ax.set_title("where each state was placed (open) vs where it was\n"
-             "measured (filled): decay drags everything toward vacuum")
+ax.set_title("target position (open) and reconstructed position (filled)")
 fig.tight_layout()
 fig.savefig(here / "displacement_decay.png", dpi=140)
 print("wrote fidelity.png and displacement_decay.png")
